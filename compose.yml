@@ -1,0 +1,13 @@
+services:
+  api:
+    build: ./modelo1/api
+    ports:
+      - "5000:80"
+  react:
+    build: ./modelo1/react-app
+    ports:
+      - "3000:3000"
+  bootstrap:
+    build: ./modelo2
+    ports:
+      - "8000:80"
