@@ -1,6 +1,10 @@
 services:
   api:
     build: ./modelo1/api
+    environment:
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
     ports:
       - "5000:80"
   react:
@@ -9,14 +13,18 @@ services:
       - "3000:3000"
   bootstrap:
     build: ./modelo2
+    environment:
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
     ports:
       - "8000:80"
   postgres:
     image: postgres
     environment:
-      - POSTGRES_DB=marcos
-      - POSTGRES_USER=marcos
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
     volumes:
       - ./db:/docker-entrypoint-initdb.d
     ports:
