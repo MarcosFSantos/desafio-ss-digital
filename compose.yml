@@ -11,3 +11,13 @@ services:
     build: ./modelo2
     ports:
       - "8000:80"
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DB=marcos
+      - POSTGRES_USER=marcos
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    ports:
+      - "5431:5432"
