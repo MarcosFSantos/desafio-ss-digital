@@ -1,5 +1,5 @@
 <?php
-require_once("database_connection.php");
+require_once(__DIR__.'/../src/database_connection.php');
 require_once("vendor/autoload.php"); # Carrega a biblioteca JWT
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;

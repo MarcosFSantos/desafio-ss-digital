@@ -1,5 +1,7 @@
 FROM php:8.2-apache
 
+RUN mkdir /var/www/src
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     unzip \
@@ -10,6 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN a2enmod rewrite
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/src
+
+COPY src/ .
 
 WORKDIR /var/www/html
 

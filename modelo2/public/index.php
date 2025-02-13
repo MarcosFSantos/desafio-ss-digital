@@ -1,5 +1,5 @@
 <?php
-require_once("database_connection.php");
+require_once(__DIR__.'/../src/database_connection.php');
 
 session_start(); # Permite a criação de sessões.
 # Vai para a página principal caso o token seja válido.
