@@ -10,13 +10,22 @@ $password=$_ENV["DATABASE_PASSWORD"];
 $connection = new pdo(dsn: "pgsql:host=$host;dbname=$db;port=$port;", username: $user, password: $password);
 
 # Executa no banco de dados a query passada como argumento e retorna um array com a resposta.
-function execute_query(String $query):array {
+function execute_query(string $query, array $params = []): array|bool {
     try {
         global $connection;
-        $statement = $connection->prepare(query: $query); # Prepara a query para execução.
-        $statement->execute(); # Executa a query.
-        $result = $statement->fetchAll(); # Retorna o resultado da query em formato de array.
-        return $result;
+        $statement = $connection->prepare(query: $query); # Prepara a query.
+
+        # Executa a query com os parâmetros fornecidos.
+        $statement->execute(params: $params);
+
+        # Retorna os resultados se a query for um SELECT.
+        $uppercase_query = strtoupper(string: trim(string: $query));
+        if (str_starts_with(haystack: $uppercase_query, needle: "SELECT")) {
+            return $statement->fetchAll();
+        }
+
+        # Retorna os resultados se a query for INSERT, UPDATE ou DELETE.
+        return true;
     } catch (\Throwable $th) {
         throw $th;
     }
