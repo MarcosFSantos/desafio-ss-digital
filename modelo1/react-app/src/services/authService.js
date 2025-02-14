@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-const API_URL = "http://api";
+const API_URL = "http://localhost:5000";
 
 // Captura o token da sessão ou do cookie.
 export const getToken = () => {
