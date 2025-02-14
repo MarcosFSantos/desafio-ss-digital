@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { login, saveToken } from "./services/authService";
 import logo from "./logo.svg";
 
 const LoginPassword = () => {
@@ -7,8 +8,9 @@ const LoginPassword = () => {
   const location = useLocation();
   const email = location.state?.email || ""; // Email enviado por LoginEmail.
 
-  const [password, setPassword] = useState(""); // Senha e função para alterar a senha. Valor padrão de "".
-  const [rememberMe, setRememberMe] = useState(false); // checkbox "Manter conectado" e a função para alterá-lo. Valor padrão de false.
+  const [password, setPassword] = useState(""); // Senha do usuário.
+  const [rememberMe, setRememberMe] = useState(false); // "Manter conectado".
+  const [message, setMessage] = useState(""); // Mensagem de erro ou sucesso.
 
   // Se não houver email enviado pelo Navigate, volta para a tela de login.
   useEffect(() => {
@@ -17,8 +19,19 @@ const LoginPassword = () => {
     }
   }, [email, navigate]);
 
-  const handle_login = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+
+    const token = await login(email, password);
+
+    if (token) {
+      saveToken(token, rememberMe);
+      navigate("/");
+    } else if (token === false) {
+      setMessage("Credenciais inválidas. Verifique seu email e senha.");
+    } else {
+      setMessage("Erro inesperado no login!");
+    }
   };
 
   return (
@@ -41,7 +54,7 @@ const LoginPassword = () => {
                 <h2 class="fs-6 fw-normal text-center text-secondary mb-4">
                   Acesse sua conta
                 </h2>
-                <form onSubmit={handle_login}>
+                <form onSubmit={handleLogin}>
                   <div class="row gy-2 overflow-hidden">
                     <p class="text-justify font-weight-bold text-center">
                       {email}
@@ -103,6 +116,11 @@ const LoginPassword = () => {
                     </div>
                   </div>
                 </form>
+                <div>
+                  <h2 class="fs-6 fw-normal text-center text-secondary mb-4">
+                    {message}
+                  </h2>
+                </div>
               </div>
             </div>
           </div>
