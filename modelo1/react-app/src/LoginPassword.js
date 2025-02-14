@@ -1,13 +1,21 @@
-import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import logo from "./logo.svg";
 
 const LoginPassword = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || ""; // Email enviado por LoginEmail.
 
   const [password, setPassword] = useState(""); // Senha e função para alterar a senha. Valor padrão de "".
   const [rememberMe, setRememberMe] = useState(false); // checkbox "Manter conectado" e a função para alterá-lo. Valor padrão de false.
+
+  // Se não houver email enviado pelo Navigate, volta para a tela de login.
+  useEffect(() => {
+    if (!email) {
+      navigate("/login");
+    }
+  }, [email, navigate]);
 
   const handle_login = (e) => {
     e.preventDefault();
