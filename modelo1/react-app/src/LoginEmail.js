@@ -8,7 +8,8 @@ const LoginEmail = () => {
   const [email, setEmail] = useState(""); // Email e função para alterar o email. Valor padrão de "".
 
   // Executada quando botão de submit do formulário é pressionado.
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     navigate("/login-senha", { state: { email } }); // Redireciona para LoginSenha.js passando o email.
   };
 
@@ -32,7 +33,7 @@ const LoginEmail = () => {
                 <h2 class="fs-6 fw-normal text-center text-secondary mb-4">
                   Acesse sua conta
                 </h2>
-                <form onClick={handleSubmit}>
+                <form onSubmit={handleSubmit}>
                   <div class="row gy-2 overflow-hidden">
                     <div class="col-12">
                       <div class="form-floating mb-3">

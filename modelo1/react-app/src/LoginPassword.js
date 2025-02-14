@@ -9,7 +9,9 @@ const LoginPassword = () => {
   const [password, setPassword] = useState(""); // Senha e função para alterar a senha. Valor padrão de "".
   const [rememberMe, setRememberMe] = useState(false); // checkbox "Manter conectado" e a função para alterá-lo. Valor padrão de false.
 
-  const handle_login = () => {};
+  const handle_login = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <div>
@@ -31,7 +33,7 @@ const LoginPassword = () => {
                 <h2 class="fs-6 fw-normal text-center text-secondary mb-4">
                   Acesse sua conta
                 </h2>
-                <form onClick={handle_login}>
+                <form onSubmit={handle_login}>
                   <div class="row gy-2 overflow-hidden">
                     <p class="text-justify font-weight-bold text-center">
                       {email}
