@@ -1,16 +1,16 @@
 import Cookies from "js-cookie";
 
-const API_URL = "localhost:5000";
+const API_URL = "http://api";
 
 // Captura o token da sessão ou do cookie.
 export const getToken = () => {
   return sessionStorage.getItem("token") || Cookies.get("token");
 };
 
-// Retorna o objeto retornado do endpoint check-jwt.
+// Retorna o objeto do endpoint check-jwt.
 export const checkJWTToken = async () => {
   const token = getToken();
-  if (!token) return null; // Retorno explícito se não houver token
+  if (!token) return null; // Se não houver token, retorna null
 
   try {
     const response = await fetch(`${API_URL}/check-jwt`, {
@@ -22,22 +22,60 @@ export const checkJWTToken = async () => {
 
     if (!response.ok) {
       console.warn(`Token inválido! Código HTTP: ${response.status}`);
-      return null;
+      if (response.status === 401) return false; // Token inválido
+      return null; // Outros erros
     }
 
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error("Erro ao verificar o token:", error);
     return null;
   }
 };
 
-// Salva o token no cookie para permanecer quando o navegador for fechado, ou na sessão.
+// Salva o token no cookie ou sessão
 export const saveToken = (token, remember) => {
+  removeToken(); // Remove token antigo antes de salvar o novo
+
   if (remember) {
-    Cookies.set("token", token, { expires: 7 });
+    Cookies.set("token", token, {
+      expires: 7,
+      secure: true,
+      sameSite: "Strict",
+    });
   } else {
     sessionStorage.setItem("token", token);
+  }
+};
+
+// Remove o token do cookie e da sessão
+export const removeToken = () => {
+  Cookies.remove("token");
+  sessionStorage.removeItem("token");
+};
+
+// Efetua login e retorna o token
+export const login = async (email, password) => {
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password: btoa(password) }), // Converte senha para base64
+    });
+
+    if (!response.ok) {
+      console.warn(`Erro no login! Código HTTP: ${response.status}`);
+
+      if (response.status === 401) return false; // Credenciais inválidas
+      if (response.status === 400) return null; // Campos inválidos
+    }
+
+    const data = await response.json();
+    return data.token;
+  } catch (error) {
+    console.error("Erro ao tentar realizar login:", error.message);
+    return null;
   }
 };
