@@ -4,6 +4,7 @@ require_once __DIR__."/util.php";
 
 class Controller
 {
+    # Efetua o login.
     public static function login():void {
         $raw_data = file_get_contents(filename: "php://input"); # Corpo bruto da requisição em formato de String.
         $data = json_decode(json: $raw_data ,associative: true); # Converte o corpo da requisição em JSON.
@@ -35,6 +36,37 @@ class Controller
             }
         } else {
             # Se o login e a senha não foram enviados na requisição, retorna erro 400.
+            http_response_code(response_code: 400);
+            echo json_encode(value: ["message"=> "Campos enviados incorretos."]);
+        }
+    }
+
+    # Checa se o token JWT existe no banco.
+    public static function checkJWT():void {
+        $headers = getallheaders();
+
+        if($headers['Authorization']) {
+            $authorization = trim(string: $headers['Authorization']);
+            $token = substr($authorization, strrpos($authorization, " ")+1); # Extrai apenas o token, ignorando oque vem antes;
+
+            # Procura o token no banco de dados
+            $database_token = execute_query(query: "SELECT Id FROM Tokens WHERE Token = ?", params: [$token]);
+
+            # Se o token existir no banco e for válido, retorna suas informações.
+            if($database_token) {
+                # Decodifica o token em um array com suas informações.
+                $decoded_token = Util::decodeJWT(token: $token);
+
+                # Retorna as informações do token.
+                http_response_code(response_code: 200);
+                echo json_encode(value: $decoded_token);
+            } else {
+                # Se o token não existir no banco e for inválido, retorna erro 401.
+                http_response_code(response_code: 401);
+                echo json_encode(value: ["message"=> "Token inválido."]);
+            }
+        } else {
+            # Se o token não for enviado na requisição, retorna erro 400.
             http_response_code(response_code: 400);
             echo json_encode(value: ["message"=> "Campos enviados incorretos."]);
         }
